@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <style>
+            main {
+                width: 600px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+            #partialword > div {
+                width: 50px;
+                height: 50px;
+                border-bottom: 3px solid black;
+                float: left;
+                font-size: 40px;
+                margin: 3px;
+            }
+        </style>
+    </head>
+    <body>
+        <main>
+            <img id="hangpic" src="hangman-0.png" />
+            <div id="partialword"></div>
+        </main>
+    </body>
+    <script>
+        let wordlist = [
+            'pero',
+            'random',
+            'neshto'
+        ];
+        function pickRandomElement(wordlist) {
+            let randomIndex = Math.floor(Math.random() * wordlist.length);
+            return wordlist[randomIndex];
+        }
+        let gameState = {
+            guesses: [],
+            wrongGuesses: 0,
+            targetWord: pickRandomElement(wordlist)
+        }
+        function renderGuess(gameState) {
+            partialWordEl = document.getElementById('partialword');
+            partialWordEl.innerHTML = "";
+            Array.from(gameState.targetWord).forEach(letter => {
+                if (gameState.guesses.includes(letter)) {
+                    let partialLetter = document.createElement('div');
+                    partialLetter.innerHTML = "" + letter;
+                    partialWordEl.append(partialLetter);
+                } else {
+                    let partialLetter = document.createElement('div');
+                    partialWordEl.append(partialLetter);
+                }
+            })
+        }
+        function guess(key) {
+            gameState.guesses.push(key);
+            if (gameState.targetWord.includes(key)) {
+                console.log('correct letter');
+            } else {
+                gameState.wrongGuesses += 1;
+                document.getElementById('hangpic').src = 'hangman-' + gameState.wrongGuesses + '.png';
+                console.log('wrong letter');
+            }
+            if (gameState.wrongGuesses > 5) {
+                return alert('You lost.')
+            }
+            renderGuess(gameState);
+            let correctGuesses = 0;
+            Array.from(gameState.targetWord).forEach(letter => {
+                if (gameState.guesses.includes(letter)) {
+                    correctGuesses += 1;
+                }
+            })
+            if (correctGuesses == gameState.targetWord.length) {
+                console.log(correctGuesses, gameState.targetWord.length)
+                return alert('You won.')
+            }
+            console.log(gameState);
+        }
+        window.addEventListener('keydown', (event) => {
+            guess(event.key);
+        })
+        renderGuess(gameState);
+    </script>
+</html>
